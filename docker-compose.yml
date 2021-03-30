@@ -1,0 +1,34 @@
+version: '3'
+services:
+  centos1:
+    image: centos
+    container_name: node_exporter
+    restart: always
+    ports:
+      - 9101:9100
+    volumes:
+      - /root/node_exporter:/root/node_exporter  #
+    command: /root/node_exporter
+
+  cadvisor:
+    image: gcr.io/cadvisor/cadvisor:latest
+    container_name: cadvisor
+    ports:
+      - 8080:8080
+    volumes:
+      - /:/rootfs:ro
+      - /var/run:/var/run:rw
+      - /sys:/sys
+      - /var/lib/docker/:/var/lib/docker:ro
+      - /dev/kmsg:/dev/kmsg
+    cap_add:
+      - SYS_PTRACE
+#    privileged: true
+    depends_on:
+      - redis
+
+  redis:
+    image: redis:latest
+    container_name: redis
+    ports:
+      - 6379:6379
